@@ -6,8 +6,7 @@ abstract interface class Repository {
   Future<List<Song>?> loadData();
 }
 
-class DefaultRepository implements Repository{
-
+class DefaultRepository implements Repository {
   final _localDataSource = LocalDataSource();
   final _remoteDataSource = RemoteDataSource();
   @override
@@ -24,7 +23,5 @@ class DefaultRepository implements Repository{
     }
 
     return songs;
-    }
-
   }
-
+}
