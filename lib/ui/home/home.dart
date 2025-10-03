@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:music_app/data/model/song.dart';
+import 'package:music_app/ui/home/viewmodel.dart';
 
 class HomeApp extends StatelessWidget {
   const HomeApp({super.key});
@@ -65,6 +67,73 @@ class HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Home Tab')));
+    return HomeTabPage();
+  }
+}
+
+class HomeTabPage extends StatefulWidget {
+  const HomeTabPage({super.key});
+
+  @override
+  State<HomeTabPage> createState() => _HomeTabPageState();
+}
+
+class _HomeTabPageState extends State<HomeTabPage> {
+  List<Song> songs = [];
+  late MusicAppViewModel _viewModel;
+  @override
+  void initState() {
+    _viewModel = MusicAppViewModel();
+    _viewModel.loadSongs();
+    observeData();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(body: getBody());
+  }
+
+  Widget getBody() {
+    bool showLoading = songs.isEmpty;
+    if (showLoading) {
+      return getProgressBar();
+    } else {
+      return getListView();
+    }
+  }
+
+  Widget getProgressBar() {
+    return const Center(child: CircularProgressIndicator());
+  }
+
+  ListView getListView() {
+    return ListView.separated(
+      itemBuilder: (context, position) {
+        return getRow(position);
+      },
+      separatorBuilder: (context, position) {
+        return const Divider(
+          color: Colors.grey,
+          thickness: 1,
+          indent: 24,
+          endIndent: 24,
+        );
+      },
+      itemCount: songs.length,
+      shrinkWrap: true,
+    );
+  }
+
+  Widget getRow(int i) {
+    return Center(child: Text(songs[i].title));
+  }
+
+  void observeData() {
+    _viewModel.songStream.stream.listen((songList) {
+      setState(() {
+        songs.addAll(songList);
+      });
+    });
   }
 }
